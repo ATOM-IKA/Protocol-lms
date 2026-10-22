@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PROTOCOL — роли и возможности</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0b0d12; --surface:#12151d; --surface2:#171b24;
+    --aqua:#9fe8ff; --lime:#beef8d; --ink:#eaf2f0; --muted:#8b98a3; --dim:#5c6873;
+    --line:#232b35; --line-strong:#2f3a45;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    background-image:linear-gradient(#11141d 1px,transparent 1px),linear-gradient(90deg,#11141d 1px,transparent 1px);
+    background-size:34px 34px;
+    padding:40px 22px 60px; min-height:100vh;
+  }
+  .wrap{max-width:1140px;margin:0 auto}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .kick{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--aqua)}
+  h1{font-family:'Unbounded',sans-serif;font-weight:800;font-size:44px;line-height:1.02;margin-top:10px;letter-spacing:-.01em}
+  h1 .dot{color:var(--aqua)}
+  .lede{color:var(--muted);max-width:720px;margin-top:14px;line-height:1.6;font-size:15px}
+  .clip{clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px))}
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:34px}
+  @media(max-width:820px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);padding:24px}
+  .card.aqua{border-color:#26404c}
+  .card.lime{border-color:#38492c}
+  .card h2{font-family:'Unbounded',sans-serif;font-weight:700;font-size:21px;display:flex;align-items:center;gap:12px}
+  .badge{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:1px solid var(--line-strong);font-size:20px;flex:0 0 auto}
+  .aqua .badge{color:var(--aqua)} .lime .badge{color:var(--lime)} .sys .badge{color:var(--ink)}
+  .role-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-top:2px;display:block}
+  ul{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:11px}
+  li{display:grid;grid-template-columns:16px 1fr;gap:11px;align-items:start;font-size:14px;color:#c8d2d8;line-height:1.45}
+  li i{margin-top:3px;width:14px;height:14px;flex:0 0 auto}
+  .aqua li .mk{color:var(--aqua)} .lime li .mk{color:var(--lime)} .sys li .mk{color:var(--muted)}
+  .mk{font-family:'JetBrains Mono',monospace;font-size:12px}
+  .feat{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
+  .chip{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border:1px solid var(--line);padding:8px 12px;background:var(--surface2)}
+  .chip b{color:var(--aqua);font-weight:500}
+  .foot{margin-top:40px;border-top:1px solid var(--line);padding-top:16px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim)}
+  .jp{color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="kick">// protocol · сводка возможностей</div>
+  <h1>Роли и права<span class="dot">.</span></h1>
+  <p class="lede">PROTOCOL — система дистанционного обучения для колледжа: курсы своего учебного заведения, прохождение уроков, сдача и проверка работ, тренажёры с авто-оценкой, опыт и ранги. Ниже — что делает каждая роль и что обеспечивает система.</p>
+
+  <div class="grid">
+
+    <div class="card aqua clip">
+      <h2><span class="badge">◈</span><span>Студент<span class="role-tag">student · доступ к учёбе</span></span></h2>
+      <ul>
+        <li><span class="mk">›</span><span>Вход по своему колледжу, выбор учебного заведения</span></li>
+        <li><span class="mk">›</span><span>Каталог курсов только своего колледжа</span></li>
+        <li><span class="mk">›</span><span>Запись на курс и отписка от него</span></li>
+        <li><span class="mk">›</span><span>Прохождение уроков со стартом с последнего места</span></li>
+        <li><span class="mk">›</span><span>Сдача работ на любом уроке (текст + файлы) — уходит в проверку</span></li>
+        <li><span class="mk">›</span><span>Прохождение подтверждает препод оценкой: 3–5 — да, 2 — нет</span></li>
+        <li><span class="mk">›</span><span>Опыт зависит от оценки; пересдача двойки — потолок как у «4»</span></li>
+        <li><span class="mk">›</span><span>Ранг по часам обучения: F → SSS (≈4000 ч — выпускник)</span></li>
+        <li><span class="mk">›</span><span>Средний балл, тренажёры с авто-проверкой, ID-карта профиля</span></li>
+      </ul>
+    </div>
+
+    <div class="card lime clip">
+      <h2><span class="badge">◇</span><span>Преподаватель<span class="role-tag">teacher · всё как у студента + кабинет</span></span></h2>
+      <ul>
+        <li><span class="mk">›</span><span>Создание и редактирование своих курсов</span></li>
+        <li><span class="mk">›</span><span>Разделы и уроки, блочный супер-редактор контента</span></li>
+        <li><span class="mk">›</span><span>Два формата урока: лекция и практическая работа</span></li>
+        <li><span class="mk">›</span><span>Пошаговое открытие уроков студентам (гейтинг)</span></li>
+        <li><span class="mk">›</span><span>Оценки 2–5 определяют прохождение и опыт студента</span></li>
+        <li><span class="mk">›</span><span>Просмотр файлов прямо в проверке: PDF, код, изображения</span></li>
+        <li><span class="mk">›</span><span>Список записанных студентов, их прогресс и оценки</span></li>
+        <li><span class="mk">›</span><span>Ранг растёт от числа продвинутых студентов; особый аватар</span></li>
+      </ul>
+    </div>
+
+    <div class="card aqua clip">
+      <h2><span class="badge">▣</span><span>Администратор<span class="role-tag">admin / superadmin · панель управления</span></span></h2>
+      <ul>
+        <li><span class="mk">›</span><span>Админ колледжа — только свой колледж; супер-админ — все</span></li>
+        <li><span class="mk">›</span><span>Обзор: статистика по пользователям, курсам, записям, сдачам</span></li>
+        <li><span class="mk">›</span><span>Пользователи: создание, смена роли и заведения, удаление</span></li>
+        <li><span class="mk">›</span><span>Заведения и журнал аудита (у супер-админа)</span></li>
+        <li><span class="mk">›</span><span>Модерация курсов: публикация и удаление</span></li>
+        <li><span class="mk">›</span><span>Ранг SSS у админов, SSS+ (красный неон) у супер-админа</span></li>
+      </ul>
+    </div>
+
+    <div class="card sys clip">
+      <h2><span class="badge">⌘</span><span>Системные<span class="role-tag">общее · для всех и «под капотом»</span></span></h2>
+      <ul>
+        <li><span class="mk">·</span><span>Изоляция данных по колледжам и ролям на стороне сервера</span></li>
+        <li><span class="mk">·</span><span>Опыт и оценки считаются только сервером — подделать нельзя</span></li>
+        <li><span class="mk">·</span><span>HTTPS и security-заголовки (CSP, HSTS)</span></li>
+        <li><span class="mk">·</span><span>152-ФЗ: согласие на обработку ПДн + политика конфиденциальности</span></li>
+        <li><span class="mk">·</span><span>Двуязычный интерфейс RU / EN</span></li>
+        <li><span class="mk">·</span><span>Командная палитра ⌘K для быстрой навигации</span></li>
+        <li><span class="mk">·</span><span>Адаптив: телефон, планшет, десктоп</span></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="feat">
+    <span class="chip"><b>Тренажёры</b> · конструктор заданий + UX/UI, консоль, сети, код</span>
+    <span class="chip"><b>Ранги</b> · часы / студенты / SSS+ у супера</span>
+    <span class="chip"><b>Оценка</b> = прохождение (3–5), опыт от оценки</span>
+    <span class="chip"><b>PocketBase</b> · HTTPS · 152-ФЗ</span>
+  </div>
+
+  <div class="foot">
+    <span>PROTOCOL · learning management system</span>
+    <span class="jp">認証済 · protocol-lms.ru</span>
+  </div>
+
+</div>
+</body>
+</html>
