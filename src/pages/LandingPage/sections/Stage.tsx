@@ -105,6 +105,7 @@ export function Stage({ onReplay }: { onReplay: () => void }) {
   // hero → FEATURES
   const heroOut = useTransform(p, [0.05, 0.15], [0, 1])
   const heroOpacity = useTransform(heroOut, [0, 1], [1, 0])
+  const heroClicks = useTransform(heroOut, (v) => (v > 0.6 ? 'none' : 'auto'))
   const heroScale = useTransform(heroOut, [0, 1], [1, 1.25])
   const titleOpacity = useTransform(p, [0.12, 0.17, 0.25, 0.31], [0, 1, 1, 0])
   const titleScale = useTransform(p, [0.12, 0.31], [0.8, 1.35])
@@ -183,7 +184,7 @@ export function Stage({ onReplay }: { onReplay: () => void }) {
 
         {/* HERO */}
         <motion.div
-          style={{ opacity: heroOpacity, scale: heroScale }}
+          style={{ opacity: heroOpacity, scale: heroScale, pointerEvents: heroClicks }}
           className="absolute inset-0 z-10 flex flex-col items-center justify-center px-4 text-center"
         >
           <Label className="mb-6">{t('landing.kicker')}</Label>
@@ -260,7 +261,7 @@ export function Stage({ onReplay }: { onReplay: () => void }) {
         </motion.div>
 
         {/* цилиндр */}
-        <div className="absolute inset-0 z-10">
+        <div className="pointer-events-none absolute inset-0 z-10">
           {slides.map((s, i) => (
             <CylinderCard
               key={i}
@@ -277,7 +278,7 @@ export function Stage({ onReplay }: { onReplay: () => void }) {
         {/* подпись активной карточки */}
         <motion.div
           style={{ opacity: captionOpacity }}
-          className="absolute inset-x-0 bottom-0 z-30 flex items-end justify-between gap-6 p-6 sm:p-10"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex items-end justify-between gap-6 p-6 sm:p-10"
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -307,7 +308,7 @@ export function Stage({ onReplay }: { onReplay: () => void }) {
           </AnimatePresence>
           <Link
             to="/features"
-            className="shrink-0 py-2 font-mono text-xs uppercase tracking-widest text-ink-soft transition-colors hover:text-lime"
+            className="pointer-events-auto shrink-0 py-2 font-mono text-xs uppercase tracking-widest text-ink-soft transition-colors hover:text-lime"
           >
             {t('landing.showcase_more')} ↗
           </Link>

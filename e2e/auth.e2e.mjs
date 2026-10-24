@@ -82,6 +82,55 @@ console.log('\n[гость]')
   await ctx.close()
 }
 
+// ───── 1б. главная: кнопка «Войти» в первой сцене ─────
+console.log('\n[главная]')
+{
+  /** точка кнопки не перекрыта невидимым слоем, и клик ведёт на вход */
+  async function heroCtaWorks(page) {
+    const btn = page.getByRole('button', { name: /Войти/ }).first()
+    await btn.waitFor({ timeout: 10000 })
+    const covered = await btn.evaluate((el) => {
+      const r = el.getBoundingClientRect()
+      const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2)
+      return !(top && (top === el || el.contains(top) || top.closest('a') === el.closest('a')))
+    })
+    assert(!covered, 'кнопка перекрыта другим слоем (клик не дойдёт)')
+    await btn.click()
+    await page.waitForURL((u) => u.pathname === '/login', { timeout: 10000 })
+  }
+  {
+    const { ctx, page } = await session() // заставка уже просмотрена
+    await check('кнопка «Войти» в первой сцене кликается и ведёт на вход', async () => {
+      await page.goto(`${BASE}/`, { waitUntil: 'networkidle' })
+      await page.waitForTimeout(1500)
+      await heroCtaWorks(page)
+    })
+    await ctx.close()
+  }
+  {
+    // первый визит: заставка играет сама, после неё кнопка должна работать
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } })
+    const page = await ctx.newPage()
+    await check('после заставки (первый визит) кнопка «Войти» работает', async () => {
+      await page.goto(`${BASE}/`, { waitUntil: 'networkidle' })
+      await page.waitForTimeout(5200) // заставка ~3,5 с
+      assert((await page.locator('.pl-orb').count()) === 0, 'заставка не закрылась')
+      await heroCtaWorks(page)
+    })
+    await ctx.close()
+  }
+  {
+    const { ctx, page } = await session()
+    await check('на телефоне кнопка «Войти» в первой сцене тоже кликается', async () => {
+      await page.setViewportSize({ width: 390, height: 844 })
+      await page.goto(`${BASE}/`, { waitUntil: 'networkidle' })
+      await page.waitForTimeout(1500)
+      await heroCtaWorks(page)
+    })
+    await ctx.close()
+  }
+}
+
 // ───── 2. ошибки входа ─────
 console.log('\n[ошибки входа]')
 {
