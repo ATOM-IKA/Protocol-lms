@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Plus, Trash2, Search, X, Upload } from 'lucide-react'
+import { Plus, Trash2, Search, X, Upload, Eye, EyeOff, Dices } from 'lucide-react'
 import { Label } from '@/shared/ui/Label'
 import { ActionButton } from '@/shared/ui/ActionButton'
 import { useToast } from '@/shared/ui/toast'
@@ -10,9 +10,16 @@ import { useAdminUsers, useAdminInstitutions, useUserMutations, useAdminGroups }
 import { createUser } from '@/entities/admin/service'
 import { useConfirm } from '@/shared/ui/Confirm'
 import type { UserRole } from '@/entities/user/types'
+import { STUDENT_ID_RE } from '@/features/auth/loginIdentity'
 import type { NewUser } from '@/entities/admin/service'
 import { cn } from '@/shared/lib/cn'
 
+/** Случайный пароль: 14 символов без похожих (0/O, 1/l), криптостойкий генератор браузера. */
+function generatePassword(): string {
+  const alphabet = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  const bytes = crypto.getRandomValues(new Uint8Array(14))
+  return Array.from(bytes, (b) => alphabet[b % alphabet.length]).join('')
+}
 const field = 'h-11 w-full border border-line-strong bg-surface-2 px-3 text-sm text-ink placeholder:text-ink-dim focus:border-aqua focus:outline-none'
 
 const EMPTY: NewUser = { email: '', password: '', fullName: '', studentId: '', callsign: '', role: 'student', institutionId: '' }
@@ -40,12 +47,12 @@ export function AdminUsers({ scope, isSuper }: { scope?: string; isSuper: boolea
     for (const line of lines) {
       const cols = line.split(/[;,\t]/).map((c) => c.trim())
       const [login, fullName, email, password] = cols
-      if (!login || !email || !password || password.length < 8) {
-        errors.push(`${login || '?'}: нужны логин, ФИО, email и пароль ≥8`)
+      if (!login || !STUDENT_ID_RE.test(login) || !password || password.length < 10) {
+        errors.push(`${login || '?'}: нужны логин (латиница/цифры, 3–32), ФИО и пароль ≥10 (email — по желанию)`)
         continue
       }
       try {
-        await createUser({ email, password, fullName: fullName || '', studentId: login, callsign: login, role: 'student', institutionId: scope ?? institutions[0]?.id ?? '' })
+        await createUser({ email: email ?? '', password, fullName: fullName || '', studentId: login, callsign: login, role: 'student', institutionId: scope ?? institutions[0]?.id ?? '' })
         ok++
       } catch (e) {
         errors.push(`${login}: ${(e as Error).message || 'ошибка'}`)
@@ -71,6 +78,7 @@ export function AdminUsers({ scope, isSuper }: { scope?: string; isSuper: boolea
   const [query, setQuery] = useState('')
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all')
   const [adding, setAdding] = useState(false)
+  const [showPwd, setShowPwd] = useState(false)
   const [form, setForm] = useState<NewUser>(() => ({ ...EMPTY, institutionId: scope ?? '' }))
   const [error, setError] = useState<string | null>(null)
 
@@ -89,8 +97,12 @@ export function AdminUsers({ scope, isSuper }: { scope?: string; isSuper: boolea
     setError(null)
     const institutionId = isSuper ? form.institutionId : scope ?? ''
     const needInst = form.role !== 'superadmin' // супер-админ не привязан к колледжу
-    if (!form.email.trim() || !form.studentId.trim() || form.password.length < 8 || (needInst && !institutionId)) {
-      setError('Заполните email, логин, пароль (от 8 символов)' + (needInst ? ' и заведение.' : '.'))
+    if (!STUDENT_ID_RE.test(form.studentId.trim())) {
+      setError('Логин: 3–32 символа — латиница, цифры, точка, дефис, подчёркивание.')
+      return
+    }
+    if (form.password.length < 10 || (needInst && !institutionId)) {
+      setError('Заполните пароль (от 10 символов)' + (needInst ? ' и заведение.' : '.') + ' Email — по желанию: для входа по номеру он не нужен.')
       return
     }
     m.create.mutate(
@@ -162,7 +174,24 @@ export function AdminUsers({ scope, isSuper }: { scope?: string; isSuper: boolea
           </div>
           <div className="flex flex-col gap-1">
             <Label>{t('admin.u_password')}</Label>
-            <input className={field} type="text" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="мин. 8 символов" />
+            <div className="relative">
+              <input
+                className={`${field} pr-20`}
+                type={showPwd ? 'text' : 'password'}
+                autoComplete="new-password"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                placeholder="мин. 10 символов"
+              />
+              <div className="absolute right-1 top-1/2 flex -translate-y-1/2 gap-1">
+                <button type="button" aria-label="Сгенерировать пароль" title="Сгенерировать" onClick={() => { setForm({ ...form, password: generatePassword() }); setShowPwd(true) }} className="flex h-9 w-9 items-center justify-center text-ink-muted hover:text-aqua">
+                  <Dices size={16} />
+                </button>
+                <button type="button" aria-label={showPwd ? 'Скрыть пароль' : 'Показать пароль'} onClick={() => setShowPwd((v) => !v)} className="flex h-9 w-9 items-center justify-center text-ink-muted hover:text-aqua">
+                  {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
           </div>
           <div className="flex flex-col gap-1">
             <Label>{t('admin.u_full_name')}</Label>

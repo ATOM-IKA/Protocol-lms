@@ -1,5 +1,6 @@
 const DIRECTUS_URL = 'https://api.protocol-lms.ru';
-const ADMIN_TOKEN = 'Ks-y--5Q8C9mBwYzMWVrXRpcXJoWDMt0';
+const ADMIN_TOKEN = process.env.DIRECTUS_STATIC_TOKEN; // токен — только из окружения, в коде не хранится
+if (!ADMIN_TOKEN) throw new Error('Задайте DIRECTUS_STATIC_TOKEN в окружении (например, из .env.audit)');
 
 const headers = {
   'Authorization': `Bearer ${ADMIN_TOKEN}`,

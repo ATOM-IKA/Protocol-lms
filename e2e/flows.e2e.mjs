@@ -3,10 +3,14 @@
 // доска, тесты, посещаемость, создание и повышение пользователей. Только для dev-сервера Vite
 // (модули приложения подгружаются из /src). Нужны демо-аккаунты (directus/apply.mjs --seed-demo).
 //   E2E_BASE=http://127.0.0.1:5173 DEMO_PASSWORD=... node e2e/flows.e2e.mjs
+import { randomBytes } from 'node:crypto'
 import { chromium } from 'playwright'
+import { demoLogin, demoPassword } from '../directus/model.mjs'
+import { loadSecrets } from '../directus/lib.mjs'
+
+loadSecrets(process.env.E2E_ENV ?? '.env.audit') // DEMO_PASSWORD из окружения или файла, игнорируемого git
 
 const BASE = (process.env.E2E_BASE ?? 'http://127.0.0.1:5173').replace(/\/$/, '')
-const PASS = process.env.DEMO_PASSWORD ?? 'Demo-pass-12345'
 const TAB = { student: 'Студент', teacher: 'Препод.', admin: 'Админ' }
 const results = []
 let failed = 0
@@ -36,7 +40,7 @@ async function denied(name, fn) {
 }
 
 const browser = await chromium.launch({ args: ['--no-sandbox'] })
-async function open(tab, identity, password = PASS) {
+async function open(tab, identity, password = demoPassword()) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } })
   await ctx.addInitScript(() => {
     try {
@@ -65,10 +69,11 @@ const call = (page, mod, fn, ...args) =>
     [`/src/entities/${mod}/service.ts`, fn, args],
   )
 
-const T = await open('teacher', 'demo-teacher')
-const S = await open('student', 'demo-student')
-const A = await open('admin', 'demo-admin')
+const T = await open('teacher', demoLogin('teacher'))
+const S = await open('student', demoLogin('student'))
+const A = await open('admin', demoLogin('admin'))
 const stamp = Date.now()
+const NEW_PASSWORD = `${randomBytes(9).toString('base64url')}aZ1` // одноразовый пароль тестового пользователя
 
 console.log('\n[преподаватель создаёт учебный материал]')
 const courseId = await step('создаёт курс (владельца и колледж ставит сервер)', async () =>
@@ -248,7 +253,7 @@ const created = {}
 await step('создаёт студента (почту вводить не нужно)', async () => {
   await call(A.page, 'admin', 'createUser', {
     email: '',
-    password: 'E2e-pass-12345',
+    password: NEW_PASSWORD,
     fullName: 'E2E Новый',
     studentId: newId,
     callsign: '',
@@ -264,13 +269,13 @@ await step('создаёт студента (почту вводить не ну
   )
 })
 await step('новый студент входит по своему номеру', async () => {
-  const N = await open('student', newId, 'E2e-pass-12345')
+  const N = await open('student', newId, NEW_PASSWORD)
   assert(N.user.role === 'student', 'роль')
   await N.ctx.close()
 })
 await step('админ повышает студента до преподавателя', async () => {
   await call(A.page, 'admin', 'updateUser', created.user.id, { role: 'teacher' })
-  const N = await open('teacher', newId, 'E2e-pass-12345')
+  const N = await open('teacher', newId, NEW_PASSWORD)
   assert(N.user.role === 'teacher', `роль после повышения: ${N.user.role}`)
   await N.ctx.close()
 })

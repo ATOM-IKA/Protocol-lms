@@ -10,6 +10,8 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  // карты исходников в боевую сборку не кладём: исходный код и комментарии не должны уходить посетителям
+  build: { sourcemap: false },
   server: {
     // Жёсткий IPv4-бинд: Vite слушает 127.0.0.1 напрямую, без резолва имени
     // localhost. Убирает лотерею IPv4/IPv6 в Windows + Node 24, из-за которой

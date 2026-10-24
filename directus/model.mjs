@@ -9,6 +9,21 @@
 /** Домен служебных адресов для входа по номеру. Держать в синхроне с src/features/auth/loginIdentity.ts (есть тест). */
 export const LOGIN_DOMAIN = 'lms.protocol-lms.ru'
 
+/** Логин тестового аккаунта: student-0001, teacher-0001 … Сам логин не секрет. */
+export const demoLogin = (key) => `${key}-0001`
+/**
+ * Пароль тестовых аккаунтов в репозитории НЕ хранится: только из окружения (DEMO_PASSWORD) или файла .env.audit,
+ * который игнорируется git. Без него скрипты отказываются работать — молчаливого «пароль по умолчанию» нет.
+ */
+export const demoPassword = () => {
+  const p = process.env.DEMO_PASSWORD
+  if (!p)
+    throw new Error(
+      'Не задан DEMO_PASSWORD: пароль тестовых аккаунтов в репозитории не хранится (задайте в окружении или в .env.audit)',
+    )
+  return p
+}
+
 export const ROLES = [
   { key: 'student', name: 'student', description: 'Студент: учится, сдаёт работы, проходит тесты' },
   {

@@ -17,8 +17,15 @@ export function loadEnv(file) {
  * Клиент Directus. Токен берётся из DIRECTUS_STATIC_TOKEN либо логином (DIRECTUS_ADMIN_EMAIL/PASSWORD —
  * для локальной песочницы). В dry-run любая запись только печатается, на сервер не уходит.
  */
+/** Подтянуть DEMO_PASSWORD из файла окружения (для скриптов, которые не вызывают connect). */
+export function loadSecrets(file = '.env.audit') {
+  const env = loadEnv(file)
+  if (env.DEMO_PASSWORD && !process.env.DEMO_PASSWORD) process.env.DEMO_PASSWORD = env.DEMO_PASSWORD
+}
+
 export async function connect({ envFile = '.env.audit', dryRun = true } = {}) {
   const env = { ...loadEnv(envFile), ...process.env }
+  if (env.DEMO_PASSWORD && !process.env.DEMO_PASSWORD) process.env.DEMO_PASSWORD = env.DEMO_PASSWORD // для demoPassword()
   const url = (env.DIRECTUS_URL || '').replace(/\/$/, '')
   if (!url) throw new Error(`Нет DIRECTUS_URL (файл ${envFile})`)
   let token = env.DIRECTUS_STATIC_TOKEN

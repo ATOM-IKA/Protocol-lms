@@ -3,11 +3,10 @@
 // Требует демо-пользователей (apply.mjs --seed-demo). Создаёт и удаляет собственные тестовые записи.
 //   node directus/verify.mjs --env FILE
 import { connect } from './lib.mjs'
-import { LOGIN_DOMAIN } from './model.mjs'
+import { LOGIN_DOMAIN, demoLogin, demoPassword } from './model.mjs'
 
 const args = process.argv.slice(2)
 const envFile = args.includes('--env') ? args[args.indexOf('--env') + 1] : '.env.audit'
-const PASS = process.env.DEMO_PASSWORD || 'Demo-pass-12345'
 
 let failed = 0,
   total = 0
@@ -38,7 +37,8 @@ const dx = await connect({ envFile, dryRun: false })
 const roles = Object.fromEntries(
   (await dx.get('/roles?limit=-1&fields=id,name')).map((r) => [r.name, r.id]),
 )
-const login = async (k) => dx.as(await dx.loginAs(`demo-${k}@${LOGIN_DOMAIN}`, PASS))
+const login = async (k) =>
+  dx.as(await dx.loginAs(`${demoLogin(k)}@${LOGIN_DOMAIN}`, demoPassword()))
 const S = await login('student'),
   T = await login('teacher'),
   A = await login('admin'),
@@ -69,7 +69,7 @@ const mkUser = async (email, role, institution, extra = {}) => {
   return (
     await dx.write('POST', '/users', {
       email,
-      password: PASS,
+      password: demoPassword(),
       role: roles[role],
       status: 'active',
       full_name: email,
@@ -84,7 +84,10 @@ const studentB = await mkUser('studentb@demo.example.com', 'student', inst2)
 const teacherB = await mkUser('teacherb@demo.example.com', 'teacher', inst2)
 const mkItem = async (c, body, key) => {
   const ex = await dx.get(`/items/${c}?filter[${key[0]}][_eq]=${key[1]}&limit=1`)
-  return ex[0]?.id ?? (await dx.write('POST', `/items/${c}`, body)).id
+  if (!ex[0]) return (await dx.write('POST', `/items/${c}`, body)).id
+  // запись осталась от прошлого запуска — переприсваиваем владельцев текущим тестовым пользователям
+  await dx.write('PATCH', `/items/${c}/${ex[0].id}`, body)
+  return ex[0].id
 }
 const cPub = await mkItem(
   'courses',
@@ -244,7 +247,11 @@ await check('пишет в журнал аудита', 'denied', () =>
   S.req('POST', '/items/audit_logs', { action: 'x' }),
 )
 await check('создаёт пользователя', 'denied', () =>
-  S.req('POST', '/users', { email: 'hack@demo.example.com', password: PASS, role: roles.student }),
+  S.req('POST', '/users', {
+    email: 'hack@demo.example.com',
+    password: demoPassword(),
+    role: roles.student,
+  }),
 )
 
 // ───── преподаватель ─────
@@ -302,7 +309,7 @@ const newStudent = `new-${Date.now()}@demo.example.com`
 await check('создаёт студента в своём колледже', 'allowed', async () => {
   const r = await A.req('POST', '/users', {
     email: newStudent,
-    password: PASS,
+    password: demoPassword(),
     role: roles.student,
     full_name: 'Новый',
     student_id: newStudent,
@@ -316,7 +323,7 @@ await check('создаёт студента в ЧУЖОМ колледже', 'd
   const em = `x-${Date.now()}@demo.example.com`
   await A.req('POST', '/users', {
     email: em,
-    password: PASS,
+    password: demoPassword(),
     role: roles.student,
     full_name: 'Чужой',
     student_id: em,
@@ -330,7 +337,7 @@ await check('создаёт студента в ЧУЖОМ колледже', 'd
 await check('создаёт админа', 'denied', () =>
   A.req('POST', '/users', {
     email: `adm-${Date.now()}@demo.example.com`,
-    password: PASS,
+    password: demoPassword(),
     role: roles.admin,
     full_name: 'x',
     student_id: `a${Date.now()}`,

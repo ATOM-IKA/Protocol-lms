@@ -3,10 +3,13 @@
 // Нужны: запущенный фронт и Directus с демо-аккаунтами (directus/apply.mjs --seed-demo).
 //   E2E_BASE=http://127.0.0.1:5173 DEMO_PASSWORD=... node e2e/auth.e2e.mjs
 import { chromium } from 'playwright'
+import { demoLogin, demoPassword } from '../directus/model.mjs'
+import { loadSecrets } from '../directus/lib.mjs'
+
+loadSecrets(process.env.E2E_ENV ?? '.env.audit') // DEMO_PASSWORD из окружения или файла, игнорируемого git
 
 const BASE = (process.env.E2E_BASE ?? 'http://127.0.0.1:5173').replace(/\/$/, '')
 const API = (process.env.E2E_API ?? 'http://127.0.0.1:8056').replace(/\/$/, '')
-const PASS = process.env.DEMO_PASSWORD ?? 'Demo-pass-12345'
 const TAB = { student: 'Студент', teacher: 'Препод.', admin: 'Админ', superadmin: 'Админ' }
 
 const results = []
@@ -84,7 +87,7 @@ console.log('\n[ошибки входа]')
 {
   const { ctx, page } = await session()
   await check('неверный пароль: понятная ошибка, сессии нет', async () => {
-    await login(page, 'student', 'demo-student', 'wrong-password-123')
+    await login(page, 'student', demoLogin('student'), 'wrong-password-123') // secret-scan:ignore
     await page.getByText('Неверный ID или пароль').waitFor({ timeout: 10000 })
     assert(path(page) === '/login', 'ушли с экрана входа')
     assert((await store(page, 'protocol-directus-auth')) === null, 'токен сохранён после неудачи')
@@ -93,22 +96,22 @@ console.log('\n[ошибки входа]')
   await check(
     'несуществующий пользователь: та же ошибка (без подсказки, есть ли такой логин)',
     async () => {
-      await login(page, 'student', 'no-such-user', 'whatever-123456')
+      await login(page, 'student', 'no-such-user', 'whatever-123456') // secret-scan:ignore
       await page.getByText('Неверный ID или пароль').waitFor({ timeout: 10000 })
     },
   )
   await check('вход без согласия на обработку данных невозможен', async () => {
     await page.goto(`${BASE}/login`, { waitUntil: 'networkidle' })
     const inputs = page.locator('form input:not([type=checkbox])')
-    await inputs.nth(0).fill('demo-student')
-    await inputs.nth(1).fill(PASS)
+    await inputs.nth(0).fill(demoLogin('student'))
+    await inputs.nth(1).fill(demoPassword())
     assert(
       await page.getByRole('button', { name: /Вход →/ }).isDisabled(),
       'кнопка активна без согласия',
     )
   })
   await check('вкладка не той роли: вход отклонён и сессия сброшена', async () => {
-    await login(page, 'teacher', 'demo-student', PASS)
+    await login(page, 'teacher', demoLogin('student'), demoPassword())
     await page.getByText(/Этот аккаунт/).waitFor({ timeout: 10000 })
     assert(path(page) === '/login', 'пустили в портал под чужой вкладкой')
     await page.waitForTimeout(500)
@@ -122,7 +125,7 @@ console.log('\n[сессия студента]')
 {
   const { ctx, page, log } = await session()
   await check('вход студента по номеру', async () => {
-    await login(page, 'student', 'demo-student', PASS)
+    await login(page, 'student', demoLogin('student'), demoPassword())
     await loggedIn(page)
     const u = JSON.parse((await store(page, 'protocol-auth')) ?? 'null')
     assert(u?.role === 'student', `роль в профиле: ${u?.role}`)
@@ -160,12 +163,12 @@ console.log('\n[недействительная сессия]')
 {
   const { ctx, page } = await session()
   await check('подделанный/просроченный токен не оставляет «зомби-вход»', async () => {
-    await login(page, 'student', 'demo-student', PASS)
+    await login(page, 'student', demoLogin('student'), demoPassword())
     await loggedIn(page)
     await page.evaluate(() => {
       const t = JSON.parse(localStorage.getItem('protocol-directus-auth'))
-      t.access_token = 'invalid.token.value'
-      t.refresh_token = 'invalid-refresh'
+      t.access_token = 'invalid.token.value' // secret-scan:ignore
+      t.refresh_token = 'invalid-refresh' // secret-scan:ignore
       t.expires_at = 1
       localStorage.setItem('protocol-directus-auth', JSON.stringify(t))
     })
@@ -204,7 +207,7 @@ for (const role of ['student', 'teacher', 'admin', 'superadmin']) {
   console.log(`\n[роль: ${role}]`)
   const { ctx, page, log } = await session()
   await check(`вход (${role})`, async () => {
-    await login(page, role, `demo-${role}`, PASS)
+    await login(page, role, demoLogin(role), demoPassword())
     await loggedIn(page)
     const u = JSON.parse((await store(page, 'protocol-auth')) ?? 'null')
     assert(u?.role === role, `роль в профиле: ${u?.role}`)

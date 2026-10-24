@@ -5,13 +5,22 @@
 //   node directus/apply.mjs --apply         — применить
 //   --reset        пересоздать схему: удалить старые коллекции (только если они пусты)
 //   --force        разрешить --reset, даже если в старых таблицах есть записи (УДАЛИТ ДАННЫЕ)
-//   --seed-demo    создать по одному тестовому пользователю на роль (пароль: DEMO_PASSWORD или печатается)
+//   --seed-demo    создать по одному тестовому пользователю на роль (пароль берётся из DEMO_PASSWORD — обязателен)
 //   --env FILE     файл окружения (по умолчанию .env.audit)
 //
 // Идемпотентно: повторный запуск ничего не ломает и не дублирует.
 import { writeFileSync } from 'node:fs'
 import { connect, log } from './lib.mjs'
-import { ROLES, USER_FIELDS, COLLECTIONS, SUBMISSION_FILES, SEED_INSTITUTIONS, LOGIN_DOMAIN } from './model.mjs'
+import {
+  ROLES,
+  USER_FIELDS,
+  COLLECTIONS,
+  SUBMISSION_FILES,
+  SEED_INSTITUTIONS,
+  LOGIN_DOMAIN,
+  demoLogin,
+  demoPassword,
+} from './model.mjs'
 import { buildPermissions } from './access.mjs'
 
 const args = process.argv.slice(2)
@@ -74,6 +83,7 @@ const PK = {
 
 async function main() {
   const dx = await connect({ dryRun: !APPLY, envFile: opt('--env', '.env.audit') })
+  if (SEED_DEMO) demoPassword() // без пароля не начинаем (он берётся из окружения)
   console.log(`Directus: ${dx.url}  |  режим: ${APPLY ? 'ПРИМЕНЕНИЕ' : 'только план (dry-run)'}`)
   const info = await dx.get('/server/info').catch(() => null)
   if (info?.version) log.ok(`версия сервера ${info.version}`)
@@ -182,7 +192,12 @@ async function main() {
       await dx.write(
         'POST',
         '/collections',
-        { collection: c.name, meta: { note: c.note, icon: 'box', ...(c.singleton ? { singleton: true } : {}) }, schema: {}, fields: [PK] },
+        {
+          collection: c.name,
+          meta: { note: c.note, icon: 'box', ...(c.singleton ? { singleton: true } : {}) },
+          schema: {},
+          fields: [PK],
+        },
         `коллекция ${c.name}`,
       )
       existing.add(c.name)
@@ -348,8 +363,14 @@ async function main() {
     /* коллекции ещё нет в dry-run */
   }
   let instId = instRows[0]?.id
+  const findInstitution = async (shortName) =>
+    (
+      await dx
+        .get(`/items/institutions?filter[short_name][_eq]=${encodeURIComponent(shortName)}&limit=1`)
+        .catch(() => [])
+    )?.[0]
   for (const inst of keptInstitutions) {
-    if (instRows.some((i) => i.short_name === inst.short_name)) continue
+    if (await findInstitution(inst.short_name)) continue
     await dx.write(
       'POST',
       '/items/institutions',
@@ -359,13 +380,11 @@ async function main() {
     instId = inst.id
     log.ok(`колледж ${inst.short_name} восстановлен (id=${inst.id})`)
   }
-  if (keptInstitutions.length)
-    instRows = await dx.get('/items/institutions?limit=-1').catch(() => instRows)
   for (const inst of SEED_INSTITUTIONS) {
-    const found = instRows.find((i) => i.short_name === inst.short_name)
+    const found = await findInstitution(inst.short_name)
     if (found) {
       instId = found.id
-      log.skip(`колледж ${inst.short_name} уже есть`)
+      log.skip(`колледж ${inst.short_name} уже есть (id=${found.id})`)
       continue
     }
     const made = await dx.write('POST', '/items/institutions', inst, `колледж ${inst.short_name}`)
@@ -374,13 +393,17 @@ async function main() {
   }
   const stats = await dx.get('/items/site_stats').catch(() => null)
   if (!stats || stats.updated_at == null) {
-    await dx.write('PATCH', '/items/site_stats', { courses: 0, students: 0, hours: 0 }, 'витрина статистики (начальные нули)')
+    await dx.write(
+      'PATCH',
+      '/items/site_stats',
+      { courses: 0, students: 0, hours: 0 },
+      'витрина статистики (начальные нули)',
+    )
     log.ok('витрина site_stats создана (числа пересчитывает refresh-stats.mjs / расширение)')
   }
   if (SEED_DEMO) {
-    const pass = process.env.DEMO_PASSWORD || 'Demo-pass-12345'
     for (const r of ROLES) {
-      const email = `demo-${r.key}@${LOGIN_DOMAIN}` // вход по номеру demo-<роль>
+      const email = `${demoLogin(r.key)}@${LOGIN_DOMAIN}` // вход по номеру <роль>-0001
       const exists = (await dx.get(`/users?filter[email][_eq]=${email}&fields=id`).catch(() => []))
         ?.length
       if (exists) {
@@ -392,12 +415,12 @@ async function main() {
         '/users',
         {
           email,
-          password: pass,
+          password: demoPassword(),
           role: ids[r.key],
           status: 'active',
           first_name: r.name,
           full_name: `Демо ${r.name}`,
-          student_id: `demo-${r.key}`,
+          student_id: demoLogin(r.key),
           institution: instId,
         },
         `демо-пользователь ${r.key}`,
@@ -405,7 +428,7 @@ async function main() {
       log.ok(`${email}`)
     }
     log.warn(
-      `демо-пароль: ${process.env.DEMO_PASSWORD ? '(из DEMO_PASSWORD)' : pass} — удалите демо-аккаунты перед боевым запуском`,
+      `демо-аккаунты (логины <роль>-0001, пароль из DEMO_PASSWORD) — только для теста: удалите их или смените пароли перед боевым запуском`,
     )
   }
 
