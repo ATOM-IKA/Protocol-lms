@@ -1,1 +1,0 @@
-import{u as n}from"./index-CSrR_5b8.js";import{b as r}from"./vendor-react-DII5bGm6.js";const u=new Set(["/","/about"]);function g(){const t=n(e=>!!e.user),{pathname:o}=r();return t?u.has(o)?{loggedIn:!0,to:"/app"}:{loggedIn:!0,to:"/about"}:{loggedIn:!1,to:"/login"}}export{g as u};
