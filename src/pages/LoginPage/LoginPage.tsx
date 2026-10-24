@@ -16,6 +16,7 @@ import type { Institution } from '@/entities/institution/types'
 import { loginWithStudentId, logout } from '@/features/auth/authService'
 import { staggerContainer, fadeInUp } from '@/shared/lib/motion'
 import { cn } from '@/shared/lib/cn'
+import { useToast } from '@/shared/ui/toast'
 
 type LoginRole = 'student' | 'teacher' | 'admin'
 const ROLE_TABS: LoginRole[] = ['student', 'teacher', 'admin']
@@ -40,6 +41,7 @@ export function LoginPage() {
   const [consent, setConsent] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const toast = useToast()
 
   if (user) return <Navigate to="/portal" replace />
 
@@ -70,6 +72,7 @@ export function LoginPage() {
         setError(t('auth.err_wrong_college'))
         return
       }
+      toast.success(t('auth.welcome', { defaultValue: 'Вы вошли в систему' }), 'готово')
       navigate((location.state as { from?: string } | null)?.from ?? '/portal', { replace: true })
     } catch {
       setError(t('auth.err_login'))

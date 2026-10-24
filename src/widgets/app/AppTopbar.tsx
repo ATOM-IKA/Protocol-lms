@@ -8,11 +8,13 @@ import { A11yMenu } from '@/features/a11y/A11yMenu'
 import { useAuthStore } from '@/features/auth/authStore'
 import { logout as authLogout } from '@/features/auth/authService'
 import { FEATURES } from '@/shared/config/features'
+import { useToast } from '@/shared/ui/toast'
 
 export function AppTopbar() {
   const { t } = useTranslation()
   const user = useAuthStore((s) => s.user)
   const navigate = useNavigate()
+  const toast = useToast()
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md">
@@ -56,6 +58,7 @@ export function AppTopbar() {
             <button
               onClick={() => {
                 authLogout()
+                toast.info('Вы вышли из аккаунта')
                 navigate('/login')
               }}
               aria-label={t('nav.logout')}

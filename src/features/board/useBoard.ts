@@ -43,11 +43,11 @@ export function useBoardMutations() {
     void qc.invalidateQueries({ queryKey: ['board'] })
   }
   return {
-    publish: useMutation({ mutationFn: (v: api.NewBoardTask) => api.publishTask(v), onSuccess: inval }),
-    remove: useMutation({ mutationFn: (id: string) => api.deleteTask(id), onSuccess: inval }),
-    submit: useMutation({ mutationFn: (v: { taskId: string; studentId: string }) => api.submitCompletion(v.taskId, v.studentId), onSuccess: inval }),
-    decline: useMutation({ mutationFn: (v: { taskId: string; studentId: string }) => api.declineTask(v.taskId, v.studentId), onSuccess: inval }),
-    reset: useMutation({ mutationFn: (v: { taskId: string; studentId: string }) => api.resetMyCompletion(v.taskId, v.studentId), onSuccess: inval }),
-    review: useMutation({ mutationFn: (v: { id: string; status: 'approved' | 'rejected' }) => api.reviewCompletion(v.id, v.status), onSuccess: inval }),
+    publish: useMutation({ meta: { success: 'Задание опубликовано' }, mutationFn: (v: api.NewBoardTask) => api.publishTask(v), onSuccess: inval }),
+    remove: useMutation({ meta: { success: 'Задание удалено' }, mutationFn: (id: string) => api.deleteTask(id), onSuccess: inval }),
+    submit: useMutation({ meta: { success: 'Выполнение отправлено на проверку' }, mutationFn: (v: { taskId: string; studentId: string }) => api.submitCompletion(v.taskId, v.studentId), onSuccess: inval }),
+    decline: useMutation({ meta: { success: 'Задание отклонено' }, mutationFn: (v: { taskId: string; studentId: string }) => api.declineTask(v.taskId, v.studentId), onSuccess: inval }),
+    reset: useMutation({ meta: { success: 'Отметка сброшена' }, mutationFn: (v: { taskId: string; studentId: string }) => api.resetMyCompletion(v.taskId, v.studentId), onSuccess: inval }),
+    review: useMutation({ meta: { success: 'Проверка сохранена' }, mutationFn: (v: { id: string; status: 'approved' | 'rejected' }) => api.reviewCompletion(v.id, v.status), onSuccess: inval }),
   }
 }

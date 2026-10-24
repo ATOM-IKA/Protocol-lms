@@ -19,9 +19,10 @@ const storage = {
 
 // any намеренно: staticToken-/authentication-клиенты дают union-тип, шумящий в tsc;
 // сами операции (readItems и пр.) типизированы.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const client: any = isDevAuth
   ? createDirectus(DIRECTUS_URL).with(rest()).with(staticToken(env.directusStaticToken))
-  : createDirectus(DIRECTUS_URL).with(rest()).with(authentication({ storage } as any))
+  : createDirectus(DIRECTUS_URL).with(rest()).with(authentication({ storage } as never))
 
 const req = <T,>(op: unknown): Promise<T> => client.request(op) as Promise<T>
 
@@ -118,7 +119,7 @@ const PROFILE_FIELDS = ['id', 'email', 'full_name', 'callsign', 'student_id', 'r
  * поле `password` кастомной `users` может скрываться/быть не-хешем, а боевая
  * проверка появится в шаге 2 (directus_users + bcrypt). В форме вводишь любой непустой пароль.
  */
-export async function loginDev(identity: string, _password: string): Promise<AuthUser> {
+export async function loginDev(identity: string): Promise<AuthUser> {
   const rec = await getFirst<RawUser>('users', { _or: [{ email: { _eq: identity } }, { student_id: { _eq: identity } }] }, PROFILE_FIELDS)
   if (!rec) throw new Error('Пользователь не найден')
   return mapAuthUser(rec)
@@ -143,7 +144,7 @@ export async function loginProd(email: string, password: string): Promise<AuthUs
   if (!rec) throw new Error('Профиль не найден (проверь policies для роли)')
   return mapAuthUser(rec)
 }
-export const login = (identity: string, password: string) => isDevAuth ? loginDev(identity, password) : loginProd(identity, password)
+export const login = (identity: string, password: string) => isDevAuth ? loginDev(identity) : loginProd(identity, password)
 
 export async function logoutAuth(): Promise<void> {
   if (!isDevAuth) { try { await req(diLogout()) } catch { /* ignore */ } }

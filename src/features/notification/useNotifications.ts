@@ -15,6 +15,6 @@ export function useNotifActions(userId: string) {
   const inval = () => qc.invalidateQueries({ queryKey: ['notifications', userId] })
   return {
     read: useMutation({ mutationFn: (id: string) => api.markNotifRead(id), onSuccess: inval }),
-    readAll: useMutation({ mutationFn: () => api.markAllNotifsRead(userId), onSuccess: inval }),
+    readAll: useMutation({ meta: { success: 'Все уведомления прочитаны' }, mutationFn: () => api.markAllNotifsRead(userId), onSuccess: inval }),
   }
 }

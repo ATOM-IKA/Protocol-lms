@@ -11,7 +11,7 @@ export function useMySubmission(lessonId: string, studentId: string, enabled: bo
 
 export function useSubmitWork() {
   const qc = useQueryClient()
-  return useMutation({
+  return useMutation({ meta: { success: 'Работа отправлена на проверку' },
     mutationFn: (input: api.SubmitInput) => api.submitWork(input),
     onSuccess: (_d, v) => {
       void qc.invalidateQueries({ queryKey: ['submission', v.lessonId, v.studentId] })
@@ -65,7 +65,7 @@ export function useCourseSubmissions(courseId: string, enabled: boolean) {
 
 export function useGradeSubmission(courseId: string) {
   const qc = useQueryClient()
-  return useMutation({
+  return useMutation({ meta: { success: 'Оценка сохранена' },
     mutationFn: (v: { id: string; grade: number; feedback: string }) => api.gradeSubmission(v.id, v.grade, v.feedback),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['submissions', courseId] })

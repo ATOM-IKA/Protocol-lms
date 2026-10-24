@@ -11,7 +11,7 @@ export function useMyEnrollment(courseId: string, studentId: string, enabled: bo
 
 export function useEnroll() {
   const qc = useQueryClient()
-  return useMutation({
+  return useMutation({ meta: { success: 'Вы записаны на курс' },
     mutationFn: (v: { courseId: string; studentId: string }) => api.enroll(v.courseId, v.studentId),
     onSuccess: (_d, v) => {
       void qc.invalidateQueries({ queryKey: ['enrollment', v.courseId, v.studentId] })
@@ -23,7 +23,7 @@ export function useEnroll() {
 
 export function useUnenroll() {
   const qc = useQueryClient()
-  return useMutation({
+  return useMutation({ meta: { success: 'Вы отписаны от курса' },
     mutationFn: (v: { id: string; courseId: string; studentId: string }) => api.unenroll(v.id),
     onSuccess: (_d, v) => {
       void qc.invalidateQueries({ queryKey: ['enrollment', v.courseId, v.studentId] })

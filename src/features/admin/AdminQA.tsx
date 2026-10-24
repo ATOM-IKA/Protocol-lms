@@ -54,7 +54,7 @@ function ReportDetails({ reportId, sections }: { reportId: string; sections: imp
 export function AdminQA() {
   const { data: reports = [], isLoading } = useQuery({ queryKey: ['admin', 'qa'], queryFn: fetchQaReports })
   const qc = useQueryClient()
-  const del = useMutation({ mutationFn: (id: string) => deleteQaReport(id), onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'qa'] }) })
+  const del = useMutation({ meta: { success: 'Отчёт удалён' }, mutationFn: (id: string) => deleteQaReport(id), onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'qa'] }) })
   const confirm = useConfirm()
   const [open, setOpen] = useState<string | null>(null)
 

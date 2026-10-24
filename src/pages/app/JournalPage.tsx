@@ -111,7 +111,6 @@ export function JournalPage() {
     setBusyCell(key)
     setAtt.mutate({ lessonId, studentId, status: next }, {
       onSuccess: () => { setFlashCell(key); setTimeout(() => setFlashCell((c) => (c === key ? null : c)), 500) },
-      onError: (e) => toast.error((e as Error).message || 'отметка не сохранилась', 'ошибка'),
       onSettled: () => setBusyCell((c) => (c === key ? null : c)),
     })
   }

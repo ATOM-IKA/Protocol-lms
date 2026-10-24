@@ -27,5 +27,5 @@ window.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
     // Не ломаем запрос, если что-то в обёртке не удалось
   }
 
-  return orig(input as any, init as any)
+  return orig(input, init)
 }) as typeof window.fetch

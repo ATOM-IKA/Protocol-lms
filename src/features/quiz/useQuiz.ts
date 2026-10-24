@@ -24,12 +24,12 @@ export function useQuizMutations() {
   const qc = useQueryClient()
   const inval = () => void qc.invalidateQueries({ queryKey: ['quiz'] })
   return {
-    create: useMutation({ mutationFn: (v: api.NewQuiz) => api.createQuiz(v), onSuccess: inval }),
-    update: useMutation({ mutationFn: (v: { id: string; patch: Partial<api.NewQuiz> }) => api.updateQuiz(v.id, v.patch), onSuccess: inval }),
-    remove: useMutation({ mutationFn: (id: string) => api.deleteQuiz(id), onSuccess: inval }),
-    addQuestion: useMutation({ mutationFn: (v: api.NewQuestion) => api.addQuestion(v), onSuccess: inval }),
-    updateQuestion: useMutation({ mutationFn: (v: { id: string; patch: Partial<api.NewQuestion> }) => api.updateQuestion(v.id, v.patch), onSuccess: inval }),
-    removeQuestion: useMutation({ mutationFn: (id: string) => api.deleteQuestion(id), onSuccess: inval }),
-    submit: useMutation({ mutationFn: (v: { quizId: string; studentId: string; answers: Record<string, unknown> }) => api.submitAttempt(v.quizId, v.studentId, v.answers), onSuccess: inval }),
+    create: useMutation({ meta: { success: 'Тест создан' }, mutationFn: (v: api.NewQuiz) => api.createQuiz(v), onSuccess: inval }),
+    update: useMutation({ meta: { success: 'Тест сохранён' }, mutationFn: (v: { id: string; patch: Partial<api.NewQuiz> }) => api.updateQuiz(v.id, v.patch), onSuccess: inval }),
+    remove: useMutation({ meta: { success: 'Тест удалён' }, mutationFn: (id: string) => api.deleteQuiz(id), onSuccess: inval }),
+    addQuestion: useMutation({ meta: { success: 'Вопрос добавлен' }, mutationFn: (v: api.NewQuestion) => api.addQuestion(v), onSuccess: inval }),
+    updateQuestion: useMutation({ meta: { success: 'Вопрос сохранён' }, mutationFn: (v: { id: string; patch: Partial<api.NewQuestion> }) => api.updateQuestion(v.id, v.patch), onSuccess: inval }),
+    removeQuestion: useMutation({ meta: { success: 'Вопрос удалён' }, mutationFn: (id: string) => api.deleteQuestion(id), onSuccess: inval }),
+    submit: useMutation({ meta: { success: 'Ответы отправлены' }, mutationFn: (v: { quizId: string; studentId: string; answers: Record<string, unknown> }) => api.submitAttempt(v.quizId, v.studentId, v.answers), onSuccess: inval }),
   }
 }

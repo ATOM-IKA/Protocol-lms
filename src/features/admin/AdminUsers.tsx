@@ -65,10 +65,7 @@ export function AdminUsers({ scope, isSuper }: { scope?: string; isSuper: boolea
 
   async function remove(id: string, name: string) {
     const ok = await confirm({ title: t('common.delete'), message: `${name} — ${t('admin.u_delete_confirm')}`, confirmLabel: t('common.delete'), danger: true })
-    if (ok) m.remove.mutate(id, {
-      onSuccess: () => toast.success('Удалено', 'готово'),
-      onError: (e) => toast.error((e as Error).message || 'не удалено', 'ошибка'),
-    })
+    if (ok) m.remove.mutate(id)
   }
 
   const [query, setQuery] = useState('')
@@ -98,8 +95,8 @@ export function AdminUsers({ scope, isSuper }: { scope?: string; isSuper: boolea
     }
     m.create.mutate(
       { ...form, institutionId, email: form.email.trim(), studentId: form.studentId.trim(), fullName: form.fullName.trim() },
-      { onSuccess: () => { setForm({ ...EMPTY, institutionId: scope ?? '' }); setAdding(false); toast.success('Пользователь создан', 'готово') },
-        onError: (e) => { const msg = (e as Error).message || t('admin.err'); setError(msg); toast.error(msg, 'ошибка') }, }
+      { onSuccess: () => { setForm({ ...EMPTY, institutionId: scope ?? '' }); setAdding(false) },
+        onError: (e) => setError((e as Error).message || t('admin.err')) }
     )
   }
 
