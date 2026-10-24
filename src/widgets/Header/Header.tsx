@@ -25,20 +25,20 @@ export function Header() {
           <span className="flex h-7 w-7 items-center justify-center rounded-[7px] bg-lime font-display font-bold text-bg">
             P
           </span>
-          <span className="font-display font-semibold tracking-[0.14em]">PROTOCOL</span>
+          <span className="hidden font-display font-semibold tracking-[0.14em] min-[420px]:inline">PROTOCOL</span>
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {FEATURES.portal && (
             <Link
               to="/portal"
-              className="hidden font-mono text-xs uppercase tracking-widest text-ink-muted transition-colors hover:text-aqua sm:block"
+              className="hidden py-2 font-mono text-xs uppercase tracking-widest text-ink-muted transition-colors hover:text-aqua sm:block"
             >
               {t('nav.portal')}
             </Link>
           )}
           <Link
             to="/features"
-            className="hidden font-mono text-xs uppercase tracking-widest text-ink-muted transition-colors hover:text-aqua sm:block"
+            className="hidden py-2 font-mono text-xs uppercase tracking-widest text-ink-muted transition-colors hover:text-aqua sm:block"
           >
             {t('nav.features')}
           </Link>

@@ -1,7 +1,7 @@
 import { useRef, type ComponentType } from 'react'
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { NoiseFilter, Pluses } from '../parts'
+import { Pluses } from '../parts'
 import { CoursesMock, LoginMock, ProgressMock } from '../Mockups'
 
 const WORDS = ['login', 'learn', 'level up']
@@ -67,7 +67,6 @@ export function Workflow() {
   const ref = useRef<HTMLElement>(null)
   const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start start', 'end end'] })
 
-  const noise = useTransform(p, [0, 0.12], [140, 0])
   const giantOpacity = useTransform(p, [0, 0.1, 0.9, 1], [0, 0.08, 0.08, 0])
   const giantX = useTransform(p, [0, 1], ['0%', '-30%'])
   const pos = useTransform(p, [0.14, 0.92], [0, 2])
@@ -80,7 +79,6 @@ export function Workflow() {
 
   return (
     <section id="pl-workflow" ref={ref} className="relative h-[420vh]">
-      <NoiseFilter id="pl-noise-wf" strength={noise} />
       <div className="sticky top-0 h-[100svh] overflow-hidden bg-bg">
         <div
           aria-hidden
@@ -94,7 +92,7 @@ export function Workflow() {
         <Pluses count={16} seed={90} className="text-ink/40" />
         <motion.div
           aria-hidden
-          style={{ opacity: giantOpacity, x: giantX, filter: 'url(#pl-noise-wf)' }}
+          style={{ opacity: giantOpacity, x: giantX }}
           className="absolute inset-y-0 left-0 flex flex-col justify-center font-display text-[clamp(5rem,22vw,20rem)] font-black uppercase leading-[0.85] text-ink"
         >
           <span className="whitespace-nowrap">WORKFLOW WORKFLOW</span>

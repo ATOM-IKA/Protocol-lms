@@ -29,7 +29,7 @@ export function LandingHeader() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.6 }}
-        className="fixed inset-x-0 top-0 z-50 flex h-16 items-center px-4 text-white mix-blend-difference sm:px-8"
+        className="fixed inset-x-0 top-0 z-50 flex h-16 items-center px-4 pl-chrome sm:px-8"
       >
         <button
           type="button"
@@ -48,7 +48,7 @@ export function LandingHeader() {
               key={n.id}
               type="button"
               onClick={() => goTo(n.id)}
-              className="opacity-70 transition-opacity hover:opacity-100"
+              className="py-2 opacity-70 transition-opacity hover:opacity-100"
             >
               {n.label}
             </button>
@@ -64,7 +64,7 @@ export function LandingHeader() {
         {FEATURES.portal && (
           <Link
             to="/portal"
-            className="hidden font-mono text-[11px] uppercase tracking-widest text-ink-soft transition-colors hover:text-aqua sm:block"
+            className="hidden py-2 font-mono text-[11px] uppercase tracking-widest text-ink-soft transition-colors hover:text-aqua sm:block"
           >
             {t('nav.portal')}
           </Link>

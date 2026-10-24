@@ -138,7 +138,7 @@ function StudentBoard() {
                       <Button size="sm" onClick={() => submit(task.id)} disabled={m.submit.isPending}>
                         <Send size={14} /> {st === 'rejected' ? t('board.retry') : t('board.submit')}
                       </Button>
-                      <button onClick={() => decline(task.id)} disabled={m.decline.isPending} className="flex items-center gap-1.5 font-mono text-[11px] text-ink-muted transition-colors hover:text-danger">
+                      <button onClick={() => decline(task.id)} disabled={m.decline.isPending} className="flex items-center gap-1 py-2.5 font-mono text-[11px] text-ink-muted transition-colors hover:text-danger">
                         <Ban size={13} /> {t('board.decline')}
                       </button>
                     </div>
@@ -158,7 +158,7 @@ function StudentBoard() {
                 task={task}
                 badge={<span className="flex items-center gap-1.5 font-mono text-xs text-ink-muted"><Ban size={15} /> {t('board.st_declined')}</span>}
                 actions={
-                  <button onClick={() => reset(task.id)} disabled={m.reset.isPending} className="flex items-center gap-1.5 font-mono text-[11px] text-aqua transition-colors hover:underline">
+                  <button onClick={() => reset(task.id)} disabled={m.reset.isPending} className="flex items-center gap-1 py-2.5 font-mono text-[11px] text-aqua transition-colors hover:underline">
                     <RotateCcw size={13} /> {t('board.return')}
                   </button>
                 }

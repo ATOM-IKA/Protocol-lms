@@ -1,14 +1,15 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { EASE_LOFI } from '@/shared/lib/motion'
-import { MarkLine, Pluses } from '../parts'
+import { MarkLine, Pluses, setSceneTone } from '../parts'
 
 const MARK = 'M120 340 V60 H230 A100 100 0 0 1 230 260 H180 V340 Z'
 
 /** Сцена 2: светлая «шторка» волной накрывает тёмную сцену; текст в тёмных плашках. */
 export function About() {
   const { t } = useTranslation()
+  useEffect(() => setSceneTone('pl-about', 'light'), [])
   const ref = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start start'] })
   // чем ближе секция к верху экрана, тем площе волна

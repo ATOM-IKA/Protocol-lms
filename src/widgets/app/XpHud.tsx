@@ -22,7 +22,7 @@ export function XpHud() {
       aria-label="Профиль и опыт"
     >
       <RoleAvatar seed={user.id} rank={rankInfo.rank} role={user.role} size={30} />
-      <div className="hidden sm:block">
+      <div className="hidden lg:block">
         <div className="flex items-center gap-2 font-mono text-[11px]">
           {isStudent && <span className="text-lime">LVL {xp.level}</span>}
           {isStudent && <span className="text-ink-dim">·</span>}

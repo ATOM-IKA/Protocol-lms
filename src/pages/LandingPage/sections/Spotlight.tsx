@@ -48,10 +48,10 @@ function Stat({
 }
 
 const BLOBS = [
-  { c: 'bg-aqua/45', s: 'left-[-10%] top-[-10%] h-[70vh] w-[70vh]', d: '0s' },
-  { c: 'bg-lime/35', s: 'right-[-8%] top-[10%] h-[60vh] w-[60vh]', d: '-4s' },
-  { c: 'bg-teal/70', s: 'left-[25%] bottom-[-20%] h-[75vh] w-[75vh]', d: '-8s' },
-  { c: 'bg-aqua-bright/30', s: 'right-[20%] bottom-[5%] h-[40vh] w-[40vh]', d: '-2s' },
+  { c: '159,232,255', a: 0.5, s: 'left-[-15%] top-[-20%] h-[90vh] w-[90vh]', d: '0s' },
+  { c: '190,239,141', a: 0.38, s: 'right-[-12%] top-[5%] h-[80vh] w-[80vh]', d: '-4s' },
+  { c: '58,116,93', a: 0.75, s: 'left-[20%] bottom-[-30%] h-[100vh] w-[100vh]', d: '-8s' },
+  { c: '196,242,255', a: 0.3, s: 'right-[15%] bottom-[-5%] h-[60vh] w-[60vh]', d: '-2s' },
 ]
 
 /** Сцена 5: карточка раскрывается на весь экран — PROTOCOL ✦ и живая статистика. */
@@ -85,7 +85,14 @@ export function Spotlight() {
           className="absolute inset-0 overflow-hidden bg-surface"
         >
           {BLOBS.map((b, i) => (
-            <div key={i} className={`pl-blob ${b.c} ${b.s}`} style={{ animationDelay: b.d }} />
+            <div
+              key={i}
+              className={`pl-blob ${b.s}`}
+              style={{
+                animationDelay: b.d,
+                background: `radial-gradient(closest-side, rgba(${b.c},${b.a}), rgba(${b.c},0))`,
+              }}
+            />
           ))}
           <Pluses count={8} seed={120} className="text-ink/50" />
 
@@ -94,7 +101,7 @@ export function Spotlight() {
             className="absolute inset-0 flex flex-col justify-center px-6 sm:px-[8vw]"
           >
             <div className="flex flex-wrap items-start gap-4">
-              <h2 className="relative font-display text-[clamp(2.6rem,12vw,11rem)] font-black leading-none tracking-tight text-ink drop-shadow-[0_10px_40px_rgba(0,0,0,0.45)]">
+              <h2 className="relative font-display text-[clamp(2.6rem,12vw,11rem)] font-black leading-none tracking-tight text-ink [text-shadow:0_10px_40px_rgba(0,0,0,0.45)]">
                 <span
                   aria-hidden
                   className="pl-twinkle absolute -left-[0.1em] -top-[0.35em] text-[0.4em] text-ink"

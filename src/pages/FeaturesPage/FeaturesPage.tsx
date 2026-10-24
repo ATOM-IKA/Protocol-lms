@@ -114,7 +114,7 @@ export function FeaturesPage() {
       >
         <Container>
           <div className="py-14">
-            <Link to="/" className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-ink-muted transition-colors hover:text-aqua">
+            <Link to="/" className="py-2 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-ink-muted transition-colors hover:text-aqua">
               <ArrowLeft size={14} /> на главную
             </Link>
 

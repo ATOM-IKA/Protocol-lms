@@ -85,6 +85,8 @@
     line-height: 1.0;
     font-weight: 800;
     letter-spacing: -0.02em;
+    overflow-wrap: break-word;
+    hyphens: auto;
   }
 
   /* Моно-метка «код»: // section, ID_NET · 0x2F */
@@ -203,3 +205,24 @@ html.a11y-reduce-motion *, html.a11y-reduce-motion *::before, html.a11y-reduce-m
   scroll-behavior: auto !important;
 }
 html.a11y-grayscale body { filter: grayscale(1); }
+
+/* Телефон: крупные заголовки страниц сжимаются плавно, длинные слова не обрезаются.
+   Вне @layer — чтобы перекрыть утилиты Tailwind (text-4xl и т.п.). Главная (.pl) исключена: у неё свои размеры. */
+@media (max-width: 480px) {
+  h1:not([data-text]):not(.pl h1) {
+    font-size: clamp(1.45rem, 7.2vw, 2.1rem);
+    line-height: 1.08;
+  }
+  h2:not([data-text]):not(.pl h2) {
+    font-size: clamp(1.2rem, 6vw, 1.7rem);
+    line-height: 1.12;
+  }
+}
+
+/* Горизонтальные полосы без видимой прокрутки (нижнее меню на телефоне) */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

@@ -1,4 +1,5 @@
-import { NavLink } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LayoutDashboard, BookOpen, Blocks, User, GraduationCap, Shield, ClipboardList, NotebookPen, FileQuestion, Trophy } from 'lucide-react'
 import { useAuthStore } from '@/features/auth/authStore'
@@ -28,6 +29,8 @@ const ITEMS: Item[] = [
 
 export function MobileNav() {
   const { t } = useTranslation()
+  const navRef = useRef<HTMLElement>(null)
+  const { pathname } = useLocation()
   const role = useAuthStore((s) => s.user?.role ?? 'student')
   const items = ITEMS.filter(
     (i) =>
@@ -36,9 +39,15 @@ export function MobileNav() {
       (i.key !== 'nav.board' || FEATURES.gamification),
   )
 
+  // у преподавателя и админа пунктов до 10 — меню прокручивается, активный пункт всегда в поле зрения
+  useEffect(() => {
+    navRef.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ inline: 'center', block: 'nearest' })
+  }, [pathname])
+
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-bg/95 backdrop-blur-md lg:hidden"
+      ref={navRef}
+      className="no-scrollbar fixed inset-x-0 bottom-0 z-40 flex snap-x overflow-x-auto border-t border-line bg-bg/95 backdrop-blur-md lg:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       aria-label={t('nav.label')}
     >
@@ -49,13 +58,13 @@ export function MobileNav() {
           end={end}
           className={({ isActive }) =>
             cn(
-              'flex flex-1 flex-col items-center gap-1 py-2.5 text-[10px] font-mono uppercase tracking-wide transition-colors',
+              'flex min-w-[4.5rem] flex-1 shrink-0 snap-start flex-col items-center gap-1 px-1 py-2.5 text-[10px] font-mono uppercase tracking-wide transition-colors',
               isActive ? 'text-aqua' : 'text-ink-muted',
             )
           }
         >
           <Icon size={20} strokeWidth={1.75} aria-hidden />
-          {t(key)}
+          <span className="max-w-full truncate">{t(key)}</span>
         </NavLink>
       ))}
     </nav>

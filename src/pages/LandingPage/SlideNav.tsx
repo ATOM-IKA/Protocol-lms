@@ -43,7 +43,7 @@ export function SlideNav() {
       />
       <nav
         aria-label="Разделы"
-        className="fixed left-5 top-1/2 z-40 hidden -translate-y-1/2 flex-col gap-3 text-white mix-blend-difference md:flex"
+        className="fixed left-5 top-1/2 z-40 hidden -translate-y-1/2 flex-col gap-3 pl-chrome md:flex"
       >
         {SLIDES.map((s, i) => (
           <button
@@ -52,7 +52,7 @@ export function SlideNav() {
             onClick={() => goTo(s.id)}
             aria-label={s.label}
             aria-current={i === active}
-            className="group flex items-center gap-3"
+            className="group flex items-center gap-3 py-1.5"
           >
             <span
               className={cn(

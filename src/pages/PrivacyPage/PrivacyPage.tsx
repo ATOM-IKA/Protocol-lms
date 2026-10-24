@@ -13,7 +13,7 @@ export function PrivacyPage() {
       <section>
         <Container>
           <div className="mx-auto max-w-3xl py-14">
-            <Link to="/" className="inline-flex w-fit items-center gap-2 font-mono text-xs uppercase tracking-widest text-ink-muted transition-colors hover:text-aqua">
+            <Link to="/" className="py-2 inline-flex w-fit items-center gap-2 font-mono text-xs uppercase tracking-widest text-ink-muted transition-colors hover:text-aqua">
               <ArrowLeft size={14} /> protocol.lms
             </Link>
 

@@ -69,7 +69,7 @@ export function Finale({ onReplay }: { onReplay: () => void }) {
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-[45%] h-[70vh] w-[110vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(159,232,255,0.28),rgba(58,116,93,0.25)_40%,transparent_70%)] blur-2xl"
+        className="pointer-events-none absolute left-1/2 top-[45%] h-[70vh] w-[110vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(159,232,255,0.28),rgba(58,116,93,0.25)_40%,transparent_70%)]"
       />
       <svg
         aria-hidden
@@ -173,24 +173,24 @@ export function Finale({ onReplay }: { onReplay: () => void }) {
               key={id}
               type="button"
               onClick={() => goTo(id)}
-              className="w-fit transition-colors hover:text-aqua"
+              className="w-fit py-1.5 transition-colors hover:text-aqua"
             >
               {label}
             </button>
           ))}
-          <Link to="/portal" className="w-fit transition-colors hover:text-aqua">
+          <Link to="/portal" className="w-fit py-1.5 transition-colors hover:text-aqua">
             {t('nav.portal')}
           </Link>
-          <Link to="/features" className="w-fit transition-colors hover:text-aqua">
+          <Link to="/features" className="w-fit py-1.5 transition-colors hover:text-aqua">
             {t('nav.features')}
           </Link>
-          <Link to="/privacy" className="w-fit transition-colors hover:text-aqua">
+          <Link to="/privacy" className="w-fit py-1.5 transition-colors hover:text-aqua">
             {t('privacy.link')}
           </Link>
           <button
             type="button"
             onClick={onReplay}
-            className="w-fit transition-colors hover:text-aqua"
+            className="w-fit py-1.5 transition-colors hover:text-aqua"
           >
             ▶ intro
           </button>

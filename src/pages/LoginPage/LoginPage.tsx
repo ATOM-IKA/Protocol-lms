@@ -199,7 +199,7 @@ export function LoginPage() {
               </motion.div>
 
               <motion.div variants={fadeInUp} className="mt-5 text-center">
-                <Link to="/" className="font-mono text-xs uppercase tracking-widest text-ink-muted transition-colors hover:text-aqua">
+                <Link to="/" className="py-2 font-mono text-xs uppercase tracking-widest text-ink-muted transition-colors hover:text-aqua">
                   ← protocol.lms
                 </Link>
               </motion.div>

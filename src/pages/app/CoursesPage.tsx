@@ -47,7 +47,7 @@ export function CoursesPage() {
               key={c}
               onClick={() => setCat(c)}
               className={cn(
-                'border px-3 py-1.5 font-mono text-xs transition-colors clip-btn',
+                'min-h-9 min-w-9 border px-3 py-2 font-mono text-xs transition-colors clip-btn',
                 cat === c ? 'border-aqua text-aqua' : 'border-line-strong text-ink-muted hover:text-ink',
               )}
             >

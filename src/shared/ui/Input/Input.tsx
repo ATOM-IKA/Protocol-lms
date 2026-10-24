@@ -47,7 +47,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               type="button"
               onClick={() => setShow((s) => !s)}
               aria-label={show ? t('auth.hide_password') : t('auth.show_password')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted transition-colors hover:text-lime"
+              className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center text-ink-muted transition-colors hover:text-lime"
             >
               {show ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>

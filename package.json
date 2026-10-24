@@ -11,7 +11,7 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "audit:migration": "node scripts/audit-pb-directus.mjs --env .env.audit --out protocol-directus-audit.md",
-    "test:e2e": "node e2e/auth.e2e.mjs && node e2e/flows.e2e.mjs",
+    "test:e2e": "node e2e/auth.e2e.mjs && node e2e/flows.e2e.mjs && node e2e/responsive.e2e.mjs",
     "directus:plan": "node directus/apply.mjs",
     "directus:verify": "node directus/verify.mjs",
     "check:secrets": "node scripts/check-secrets.mjs --all",

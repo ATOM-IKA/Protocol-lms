@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import Lenis from 'lenis'
 import { LandingHeader } from './LandingHeader'
-import { SlideNav } from './SlideNav'
+import { SlideNav, SLIDES } from './SlideNav'
+import { useHeaderTone } from './parts'
 import { Intro } from './Intro'
 import { Stage } from './sections/Stage'
 import { About } from './sections/About'
@@ -28,8 +29,11 @@ const writeSeen = (): void => {
   }
 }
 
+const SLIDE_IDS = SLIDES.map((s) => s.id)
+
 export function LandingPage() {
   const reduce = useReducedMotion()
+  useHeaderTone(SLIDE_IDS)
   const lenisRef = useRef<Lenis | null>(null)
   // заставка сама играет только при первом входе; дальше — по кнопке «▶ intro»
   const [intro, setIntro] = useState(() => !readSeen())

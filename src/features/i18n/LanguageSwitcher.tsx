@@ -22,7 +22,7 @@ export function LanguageSwitcher() {
             onClick={() => void i18n.changeLanguage(lng)}
             aria-pressed={active}
             className={cn(
-              'relative z-10 rounded-full px-2.5 py-1 font-mono text-xs uppercase transition-colors duration-200',
+              'relative z-10 rounded-full px-3 py-1.5 font-mono text-xs uppercase transition-colors duration-200',
               active ? 'text-bg' : 'text-ink-muted hover:text-ink',
             )}
           >

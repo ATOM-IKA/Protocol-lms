@@ -14,7 +14,7 @@ import { Label } from '@/shared/ui/Label'
 import { EASE_LOFI } from '@/shared/lib/motion'
 import { useAuthEntry } from '@/features/auth/useAuthEntry'
 import { Wordmark } from '../Wordmark'
-import { Prism, Pluses, Tunnel, prand } from '../parts'
+import { Prism, Pluses, Tunnel, prand, useLite } from '../parts'
 import { CoursesMock, JournalMock, ProgressMock, QuizMock, XpMock } from '../Mockups'
 
 interface Slide {
@@ -80,6 +80,7 @@ function CylinderCard({
         left: 'calc(50% - var(--cw) / 2)',
         top: 'calc(50% - var(--cw) * 0.31)',
         containerType: 'inline-size',
+        willChange: 'transform, opacity',
       }}
       className="absolute overflow-hidden rounded-[10px] border border-line-aqua shadow-[0_0_80px_rgba(159,232,255,0.14)]"
     >
@@ -94,6 +95,7 @@ export function Stage({ onReplay }: { onReplay: () => void }) {
   const { t } = useTranslation()
   const { to } = useAuthEntry()
   const narrow = useNarrow()
+  const lite = useLite()
   const ref = useRef<HTMLElement>(null)
   const stickyRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
@@ -104,18 +106,11 @@ export function Stage({ onReplay }: { onReplay: () => void }) {
   const heroOut = useTransform(p, [0.05, 0.15], [0, 1])
   const heroOpacity = useTransform(heroOut, [0, 1], [1, 0])
   const heroScale = useTransform(heroOut, [0, 1], [1, 1.25])
-  const heroBlur = useTransform(heroOut, (v) => `blur(${v * 16}px)`)
   const titleOpacity = useTransform(p, [0.12, 0.17, 0.25, 0.31], [0, 1, 1, 0])
   const titleScale = useTransform(p, [0.12, 0.31], [0.8, 1.35])
-  const titleBlur = useTransform(
-    p,
-    [0.12, 0.17, 0.25, 0.31],
-    ['blur(20px)', 'blur(0px)', 'blur(0px)', 'blur(14px)'],
-  )
 
   // декор
   const tunnelScale = useTransform(p, [0, 0.3, 1], [1, 1.18, 1.3])
-  const tunnelRotate = useTransform(p, [0, 1], [0, -6])
   const prismScale = useTransform(p, [0, 0.18, 0.3], [1, 1.5, 0.7])
   const prismOpacity = useTransform(p, [0.24, 0.34, 0.9, 0.96], [1, 0.35, 0.35, 0])
   const hudOpacity = useTransform(p, [0.03, 0.09], [1, 0])
@@ -175,26 +170,27 @@ export function Stage({ onReplay }: { onReplay: () => void }) {
         ref={stickyRef}
         className="sticky top-0 h-[100svh] overflow-hidden [--cw:min(600px,80vw)] [--flip:0]"
       >
-        <Tunnel style={{ scale: tunnelScale, rotateZ: tunnelRotate }} />
+        <Tunnel style={{ scale: tunnelScale }} lite={lite} />
         <Pluses count={14} seed={5} className="text-aqua/50" />
 
         <div className="absolute inset-0 flex items-center justify-center">
           <Prism
             size={narrow ? 150 : 260}
+            spin={!lite}
             style={{ scale: prismScale, opacity: prismOpacity, y: '-4%' }}
           />
         </div>
 
         {/* HERO */}
         <motion.div
-          style={{ opacity: heroOpacity, scale: heroScale, filter: heroBlur }}
+          style={{ opacity: heroOpacity, scale: heroScale }}
           className="absolute inset-0 z-10 flex flex-col items-center justify-center px-4 text-center"
         >
           <Label className="mb-6">{t('landing.kicker')}</Label>
           <Wordmark
             text={t('landing.title')}
             play
-            className="text-[clamp(2.2rem,11.2vw,10rem)] drop-shadow-[0_0_40px_rgba(159,232,255,0.35)]"
+            className="text-[clamp(2.2rem,11.2vw,10rem)] [text-shadow:0_0_40px_rgba(159,232,255,0.35)]"
           />
           <div className="mt-6 flex items-center gap-3">
             <span className="h-px w-11 bg-aqua" />
@@ -251,7 +247,7 @@ export function Stage({ onReplay }: { onReplay: () => void }) {
         {/* FEATURES */}
         <motion.div
           aria-hidden
-          style={{ opacity: titleOpacity, scale: titleScale, filter: titleBlur }}
+          style={{ opacity: titleOpacity, scale: titleScale }}
           className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center"
         >
           <div
@@ -311,7 +307,7 @@ export function Stage({ onReplay }: { onReplay: () => void }) {
           </AnimatePresence>
           <Link
             to="/features"
-            className="shrink-0 font-mono text-xs uppercase tracking-widest text-ink-soft transition-colors hover:text-lime"
+            className="shrink-0 py-2 font-mono text-xs uppercase tracking-widest text-ink-soft transition-colors hover:text-lime"
           >
             {t('landing.showcase_more')} ↗
           </Link>

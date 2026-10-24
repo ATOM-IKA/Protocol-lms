@@ -1,7 +1,7 @@
-import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { useEffect, useRef } from 'react'
+import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { MarkLine, NoiseFilter } from '../parts'
+import { Grain, MarkLine, setSceneTone } from '../parts'
 
 /** Сцена 3: VISION — переливающаяся лента разрастается на весь экран и «рассыпается» в тьму. */
 export function Vision() {
@@ -14,12 +14,13 @@ export function Vision() {
   const expand = useTransform(p, [0.4, 0.86], [0, 1])
   const ribbonScale = useTransform(expand, [0, 1], [1, 36])
   const ribbonRotate = useTransform(expand, [0, 1], [24, 72])
-  const noise = useTransform(expand, [0, 0.35, 1], [0, 30, 140])
+  const grain = useTransform(expand, [0.15, 0.5, 0.9], [0, 0.55, 0.25])
   const dark = useTransform(p, [0.8, 0.97], [0, 1])
+  useEffect(() => setSceneTone('pl-vision', 'light'), [])
+  useMotionValueEvent(dark, 'change', (v) => setSceneTone('pl-vision', v > 0.5 ? 'dark' : 'light'))
 
   return (
     <section id="pl-vision" ref={ref} className="relative h-[260vh] bg-ink text-bg">
-      <NoiseFilter id="pl-noise-vision" strength={noise} />
       <div className="sticky top-0 h-[100svh] overflow-hidden">
         <motion.div
           aria-hidden
@@ -34,7 +35,7 @@ export function Vision() {
           style={{ perspective: 900 }}
         >
           <motion.div
-            style={{ scale: ribbonScale, rotate: ribbonRotate, filter: 'url(#pl-noise-vision)' }}
+            style={{ scale: ribbonScale, rotate: ribbonRotate }}
             className="h-[52vh] w-[2.6vh] min-w-[12px]"
           >
             <motion.div
@@ -56,6 +57,7 @@ export function Vision() {
           <p className="mt-6 font-mono text-xs text-bg/55">{t('landing.vision_sub')}</p>
         </motion.div>
 
+        <Grain style={{ opacity: grain }} className="mix-blend-multiply" />
         <motion.div aria-hidden style={{ opacity: dark }} className="absolute inset-0 bg-bg" />
       </div>
     </section>
