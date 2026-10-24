@@ -234,7 +234,19 @@
     "cta_title": "Ready to study in flow?",
     "cta_text": "Sign in to your college system and start your first course today.",
     "footer_tagline": "A dark LMS for those who study seriously",
-    "kicker": "// learning management system"
+    "kicker": "// learning management system",
+    "showcase_journal_title": "Journal & attendance",
+    "showcase_journal_text": "Teachers mark attendance and grades in a couple of clicks — students see the result instantly.",
+    "showcase_quiz_title": "Quizzes & tasks",
+    "showcase_quiz_text": "Knowledge checks with instant results and XP for every correct answer.",
+    "showcase_more": "All features",
+    "about_1": "Learning like",
+    "about_2": "never before —",
+    "about_3": "in a single flow",
+    "about_sub": "Your college courses, progress and grades in one calm system — no chaos of tabs and chats.",
+    "vision_1": "Studying that pulls you in,",
+    "vision_2": "not wears you out",
+    "vision_sub": "XP, levels and honest progress — to get to the finish line."
   },
   "dashboard": {
     "kicker": "// dashboard",
