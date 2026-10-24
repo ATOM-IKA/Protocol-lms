@@ -1,0 +1,1 @@
+import{j as t}from"./vendor-react-DII5bGm6.js";import{a as e}from"./index-CSrR_5b8.js";function n({children:a,className:s,accent:o=!1}){return t.jsx("span",{className:e("label-mono",o&&"text-aqua",s),children:a})}export{n as L};
