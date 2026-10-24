@@ -5,6 +5,7 @@ import { Button } from '@/shared/ui/Button'
 import { LanguageSwitcher } from '@/features/i18n/LanguageSwitcher'
 import { useAuthStore } from '@/features/auth/authStore'
 import { useAuthEntry } from '@/features/auth/useAuthEntry'
+import { FEATURES } from '@/shared/config/features'
 import { goTo } from './parts'
 
 const NAV = [
@@ -60,6 +61,14 @@ export function LandingHeader() {
         transition={{ delay: 0.3, duration: 0.6 }}
         className="fixed right-4 top-0 z-50 flex h-16 items-center gap-3 sm:right-8"
       >
+        {FEATURES.portal && (
+          <Link
+            to="/portal"
+            className="hidden font-mono text-[11px] uppercase tracking-widest text-ink-soft transition-colors hover:text-aqua sm:block"
+          >
+            {t('nav.portal')}
+          </Link>
+        )}
         <LanguageSwitcher />
         <Link to={to}>
           <Button size="sm" variant="secondary">
