@@ -14,6 +14,6 @@ export async function fetchServerProgress(courseId: string, studentId: string): 
  */
 export async function setLessonDone(courseId: string, studentId: string, lessonId: string, done: boolean): Promise<void> {
   const existing = await getFirst<Rec>('session_progress', { student: { _eq: asId(studentId) }, lesson: { _eq: asId(lessonId) } })
-  if (existing) await updateRec('session_progress', String(existing.id), { completed: done, completed_at: done ? new Date().toISOString() : null })
-  else await createRec('session_progress', { student: asId(studentId), course: asId(courseId), lesson: asId(lessonId), completed: done, completed_at: done ? new Date().toISOString() : null })
+  if (existing) await updateRec('session_progress', String(existing.id), { completed: done })
+  else await createRec('session_progress', { course: asId(courseId), lesson: asId(lessonId), completed: done })
 }

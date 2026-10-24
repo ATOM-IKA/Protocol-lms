@@ -15,7 +15,7 @@ export async function fetchAuthorQuizzes(authorId: string): Promise<Quiz[]> {
 }
 export interface NewQuiz { courseId?: string; authorId: string; institutionId?: string; title: string; description?: string; timeLimit?: number; passScore?: number; rewardCoins?: number; rewardXp?: number; published?: boolean }
 export async function createQuiz(input: NewQuiz): Promise<string> {
-  const rec = await createRec<QuizRec>('quizzes', { ...(input.courseId ? { course: asId(input.courseId) } : {}), author: asId(input.authorId), ...(input.institutionId ? { institution: asId(input.institutionId) } : {}), title: input.title, description: input.description ?? '', time_limit: input.timeLimit ?? 0, pass_score: input.passScore ?? 60, reward_coins: input.rewardCoins ?? 0, reward_xp: input.rewardXp ?? 0, published: !!input.published, created: new Date().toISOString() })
+  const rec = await createRec<QuizRec>('quizzes', { ...(input.courseId ? { course: asId(input.courseId) } : {}), title: input.title, description: input.description ?? '', time_limit: input.timeLimit ?? 0, pass_score: input.passScore ?? 60, reward_coins: input.rewardCoins ?? 0, reward_xp: input.rewardXp ?? 0, published: !!input.published })
   return String(rec.id)
 }
 export async function updateQuiz(id: string, patch: Partial<NewQuiz>): Promise<void> {
@@ -56,8 +56,8 @@ export async function fetchQuizForTake(quizId: string): Promise<{ quiz: Quiz; qu
   return { quiz, questions: qlist.map((r) => mapQ(r, false)) }
 }
 /** NB: score/passed считает серверный хук (шаг 2). Сейчас возвращаем 0/false. */
-export async function submitAttempt(quizId: string, studentId: string, answers: Record<string, unknown>): Promise<{ score: number; passed: boolean }> {
-  const rec = await createRec<ARec>('quiz_attempts', { quiz: asId(quizId), student: asId(studentId), answers, created: new Date().toISOString() })
+export async function submitAttempt(quizId: string, _studentId: string, answers: Record<string, unknown>): Promise<{ score: number; passed: boolean }> {
+  const rec = await createRec<ARec>('quiz_attempts', { quiz: asId(quizId), answers })
   return { score: rec.score ?? 0, passed: !!rec.passed }
 }
 export async function fetchMyAttempts(studentId: string): Promise<Attempt[]> {

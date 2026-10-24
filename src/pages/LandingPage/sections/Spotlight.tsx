@@ -112,26 +112,28 @@ export function Spotlight() {
               </Link>
             </div>
             <p className="mt-6 max-w-xl text-ink-soft">{t('landing.subtitle')}</p>
-            <div className="mt-10 grid max-w-3xl grid-cols-3 gap-4 sm:gap-10">
-              <Stat
-                target={data?.courses ?? 0}
-                label={t('landing.stats_courses')}
-                active={active}
-                loading={isLoading}
-              />
-              <Stat
-                target={data?.students ?? 0}
-                label={t('landing.stats_students')}
-                active={active}
-                loading={isLoading}
-              />
-              <Stat
-                target={data?.hours ?? 0}
-                label={t('landing.stats_hours')}
-                active={active}
-                loading={isLoading}
-              />
-            </div>
+            {data && (
+              <div className="mt-10 grid max-w-3xl grid-cols-3 gap-4 sm:gap-10">
+                <Stat
+                  target={data.courses}
+                  label={t('landing.stats_courses')}
+                  active={active}
+                  loading={isLoading}
+                />
+                <Stat
+                  target={data.students}
+                  label={t('landing.stats_students')}
+                  active={active}
+                  loading={isLoading}
+                />
+                <Stat
+                  target={data.hours}
+                  label={t('landing.stats_hours')}
+                  active={active}
+                  loading={isLoading}
+                />
+              </div>
+            )}
           </motion.div>
         </motion.div>
       </div>

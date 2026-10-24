@@ -1,4 +1,4 @@
-import { getItems, getFirst, createRec, updateRec, deleteRec, asId, relStr, relId, relNum } from '@/shared/api/directus'
+import { getItems, getFirst, createRec, updateRec, deleteRec, asId, relStr, relId, relNum, ownerFields, personFields } from '@/shared/api/directus'
 export type CompletionStatus = 'submitted' | 'approved' | 'rejected' | 'declined'
 export interface BoardTask { id: string; authorId: string; authorName: string; title: string; description: string; target: 'all' | 'group'; groupId: string; groupCode: string; rewardCoins: number; rewardXp: number; created: string }
 export interface BoardCompletion { id: string; taskId: string; taskTitle: string; studentId: string; studentName: string; status: CompletionStatus; created: string }
@@ -12,21 +12,21 @@ const mapTask = (r: TaskRec): BoardTask => {
   return { id: String(r.id), authorId: relId(r.author), authorName: relStr(r.author, 'full_name') || relStr(r.author, 'student_id') || '—', title: r.title, description: r.description ?? '', target: r.target ?? 'all', groupId: relId(r.group), groupCode: spec ? `${course}${relNum(r.group, 'index', 1) || 1}-${spec}` : '', rewardCoins: r.reward_coins ?? 0, rewardXp: r.reward_xp ?? 0, created: r.created ?? '' }
 }
 const mapComp = (r: CompRec): BoardCompletion => ({ id: String(r.id), taskId: relId(r.task), taskTitle: relStr(r.task, 'title'), studentId: relId(r.student), studentName: relStr(r.student, 'full_name') || relStr(r.student, 'student_id') || '—', status: r.status ?? 'submitted', created: r.created ?? '' })
-const TASK_FIELDS = ['*', 'author.id', 'author.full_name', 'author.student_id', 'group.id', 'group.specialty', 'group.start_year', 'group.index']
-const COMP_FIELDS = ['*', 'task.id', 'task.title', 'student.id', 'student.full_name', 'student.student_id']
+const taskFields = () => ['*', ...personFields('author'), 'group.id', 'group.specialty', 'group.start_year', 'group.index']
+const compFields = () => ['*', 'task.id', 'task.title', ...personFields('student')]
 
 export async function fetchTasksForStudent(groupId?: string): Promise<BoardTask[]> {
   const filter = groupId ? { _or: [{ target: { _eq: 'all' } }, { group: { _eq: asId(groupId) } }] } : { target: { _eq: 'all' } }
-  return (await getItems<TaskRec>('board_tasks', { filter, sort: '-created', fields: TASK_FIELDS })).map(mapTask)
+  return (await getItems<TaskRec>('board_tasks', { filter, sort: '-created', fields: taskFields() })).map(mapTask)
 }
 export async function fetchTasksByAuthor(authorId: string): Promise<BoardTask[]> {
-  return (await getItems<TaskRec>('board_tasks', { filter: { author: { _eq: asId(authorId) } }, sort: '-created', fields: TASK_FIELDS })).map(mapTask)
+  return (await getItems<TaskRec>('board_tasks', { filter: { author: { _eq: asId(authorId) } }, sort: '-created', fields: taskFields() })).map(mapTask)
 }
 export interface NewBoardTask { authorId: string; title: string; description: string; target: 'all' | 'group'; groupId?: string; rewardCoins: number; rewardXp: number; institutionId?: string }
-export const publishTask = (i: NewBoardTask) => createRec('board_tasks', { author: asId(i.authorId), title: i.title, description: i.description, target: i.target, ...(i.target === 'group' && i.groupId ? { group: asId(i.groupId) } : {}), reward_coins: i.rewardCoins, reward_xp: i.rewardXp, ...(i.institutionId ? { institution: asId(i.institutionId) } : {}), created: new Date().toISOString() }).then(() => {})
+export const publishTask = (i: NewBoardTask) => createRec('board_tasks', { ...ownerFields({ author: asId(i.authorId) }), title: i.title, description: i.description, target: i.target, ...(i.target === 'group' && i.groupId ? { group: asId(i.groupId) } : {}), reward_coins: i.rewardCoins, reward_xp: i.rewardXp, ...ownerFields(i.institutionId ? { institution: asId(i.institutionId) } : {}) }).then(() => {})
 export const deleteTask = (id: string) => deleteRec('board_tasks', id)
 export async function fetchMyCompletions(studentId: string): Promise<BoardCompletion[]> {
-  return (await getItems<CompRec>('board_completions', { filter: { student: { _eq: asId(studentId) } }, sort: '-created', fields: COMP_FIELDS })).map(mapComp)
+  return (await getItems<CompRec>('board_completions', { filter: { student: { _eq: asId(studentId) } }, sort: '-created', fields: compFields() })).map(mapComp)
 }
 export const submitCompletion = (taskId: string, studentId: string) => upsert(taskId, studentId, 'submitted')
 export const declineTask = (taskId: string, studentId: string) => upsert(taskId, studentId, 'declined')
@@ -37,10 +37,10 @@ export async function resetMyCompletion(taskId: string, studentId: string): Prom
 async function upsert(taskId: string, studentId: string, status: CompletionStatus): Promise<void> {
   const existing = await getFirst<CompRec>('board_completions', { task: { _eq: asId(taskId) }, student: { _eq: asId(studentId) } })
   if (existing) await updateRec('board_completions', String(existing.id), { status })
-  else await createRec('board_completions', { task: asId(taskId), student: asId(studentId), status, created: new Date().toISOString() })
+  else await createRec('board_completions', { task: asId(taskId), status })
 }
 export async function fetchCompletionsForAuthor(authorId: string): Promise<BoardCompletion[]> {
-  return (await getItems<CompRec>('board_completions', { filter: { task: { author: { _eq: asId(authorId) } } }, sort: '-created', fields: COMP_FIELDS })).map(mapComp)
+  return (await getItems<CompRec>('board_completions', { filter: { task: { author: { _eq: asId(authorId) } } }, sort: '-created', fields: compFields() })).map(mapComp)
 }
 export const reviewCompletion = (id: string, status: 'approved' | 'rejected') => updateRec('board_completions', id, { status }).then(() => {})
 export async function fetchMyBoardXp(studentId: string): Promise<number> {

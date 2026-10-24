@@ -1,4 +1,4 @@
-import { getItems, getItem, createRec, updateRec, deleteRec, asId, contentToStr } from '@/shared/api/directus'
+import { getItems, getItem, createRec, updateRec, deleteRec, asId, contentToStr, ownerFields } from '@/shared/api/directus'
 import type { Course, CourseAccent, CourseStatus, Lesson, LessonType, Section } from './types'
 
 interface CourseRec { id: unknown; title: string; subtitle?: string; category?: string; icon?: string; instructor?: string; owner?: unknown; institution?: unknown; status?: CourseStatus; total_hours?: number; accent?: CourseAccent }
@@ -38,7 +38,7 @@ export async function fetchCourse(id: string): Promise<Course | null> {
 }
 
 export async function createCourse(ownerId: string, instructor: string, institutionId: string): Promise<string> {
-  const rec = await createRec<CourseRec>('courses', { title: 'Новый курс', subtitle: 'Краткое описание', category: 'Разработка', icon: 'code', accent: 'aqua', instructor, owner: asId(ownerId), institution: asId(institutionId), status: 'draft', total_hours: 0 })
+  const rec = await createRec<CourseRec>('courses', { title: 'Новый курс', subtitle: 'Краткое описание', category: 'Разработка', icon: 'code', accent: 'aqua', instructor, ...ownerFields({ owner: asId(ownerId), institution: asId(institutionId) }), status: 'draft', total_hours: 0 })
   return String(rec.id)
 }
 export async function updateCourse(id: string, patch: Partial<Course>): Promise<void> {

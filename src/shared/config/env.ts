@@ -10,7 +10,13 @@ export const env = {
   /** Старый бэкенд (PocketBase) — живёт до удаления PB-слоя. */
   pocketbaseUrl: pbOrigin || pbUrl || 'http://127.0.0.1:8090',
   /** Новый бэкенд (Directus) — явный URL, всегда (без origin!). */
-  directusUrl: dxUrl || 'http://127.0.0.1:8055',
+  directusUrl:
+    dxUrl ||
+    // Забыли VITE_DIRECTUS_URL при боевой сборке: localhost у посетителя — это его компьютер, вход бы молча не работал.
+    // Берём API на поддомене текущего сайта (protocol-lms.ru → https://api.protocol-lms.ru).
+    (import.meta.env.PROD && typeof window !== 'undefined'
+      ? `https://api.${window.location.hostname.replace(/^www\./, '')}`
+      : 'http://127.0.0.1:8055'),
   /** DEV-токен авторизации (шаг 1). В PROD-сборке НЕ задавать. */
   directusStaticToken: import.meta.env.VITE_DIRECTUS_STATIC_TOKEN?.trim() || '',
 } as const

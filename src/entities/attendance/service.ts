@@ -14,5 +14,5 @@ export async function setAttendance(courseId: string, lessonId: string, studentI
   const existing = await getFirst<Rec>('attendance', { lesson: { _eq: asId(lessonId) }, student: { _eq: asId(studentId) } })
   if (status === null) { if (existing) await deleteRec('attendance', String(existing.id)); return }
   if (existing) await updateRec('attendance', String(existing.id), { status })
-  else await createRec('attendance', { course: asId(courseId), lesson: asId(lessonId), student: asId(studentId), status, created: new Date().toISOString() })
+  else await createRec('attendance', { course: asId(courseId), lesson: asId(lessonId), student: asId(studentId), status })
 }

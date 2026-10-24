@@ -6,13 +6,13 @@ export interface QaReport { id: string; reporterId: string; name: string; role: 
 export interface QaShot { item: string; url: string }
 export interface NewQaReport { reporterId: string; name: string; role: string; score: number; problems: number; sections: QaSectionSummary[] }
 export async function submitQaReport(input: NewQaReport): Promise<string> {
-  const rec = await createRec<{ id: unknown }>('qa_reports', { reporter: asId(input.reporterId), name: input.name, role: input.role, score: input.score, problems: input.problems, payload: { sections: input.sections }, created: new Date().toISOString() })
+  const rec = await createRec<{ id: unknown }>('qa_reports', { name: input.name, role: input.role, score: input.score, problems: input.problems, payload: { sections: input.sections } })
   return String(rec.id)
 }
 /** NB: в PB файл шёл прямо в запись; в Directus сначала грузим в directus_files, потом link. */
 export async function uploadQaScreenshot(reportId: string, item: string, file: File): Promise<void> {
   const fileId = await uploadFile(file)
-  await createRec('qa_screenshots', { report: asId(reportId), item, image: fileId, created: new Date().toISOString() })
+  await createRec('qa_screenshots', { report: asId(reportId), item, image: fileId })
 }
 interface Rec { id: unknown; reporter?: unknown; name?: string; role?: string; score?: number; problems?: number; payload?: unknown; created?: string }
 interface ShotRec { id: unknown; report?: unknown; item?: string; image?: unknown }

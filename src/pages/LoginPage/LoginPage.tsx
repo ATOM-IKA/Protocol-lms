@@ -13,7 +13,7 @@ import { InstitutionSelect } from '@/features/auth/InstitutionSelect'
 import { useAuthStore } from '@/features/auth/authStore'
 import { fetchInstitutions } from '@/entities/institution/service'
 import type { Institution } from '@/entities/institution/types'
-import { loginWithStudentId, logout } from '@/features/auth/authService'
+import { commitLogin, logout, signIn } from '@/features/auth/authService'
 import { staggerContainer, fadeInUp } from '@/shared/lib/motion'
 import { cn } from '@/shared/lib/cn'
 import { useToast } from '@/shared/ui/toast'
@@ -59,7 +59,7 @@ export function LoginPage() {
     }
     setLoading(true)
     try {
-      const user = await loginWithStudentId(studentId.trim(), password)
+      const user = await signIn(studentId.trim(), password)
       // явная проверка выбранной роли (админ-вкладка пускает admin и superadmin)
       const roleOk = role === 'admin' ? user.role === 'admin' || user.role === 'superadmin' : user.role === role
       if (!roleOk) {
@@ -72,6 +72,7 @@ export function LoginPage() {
         setError(t('auth.err_wrong_college'))
         return
       }
+      commitLogin(user) // впускаем только после проверки роли и колледжа
       toast.success(t('auth.welcome', { defaultValue: 'Вы вошли в систему' }), 'готово')
       navigate((location.state as { from?: string } | null)?.from ?? '/portal', { replace: true })
     } catch {
