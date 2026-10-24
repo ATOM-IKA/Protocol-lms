@@ -1,0 +1,1 @@
+import{B as n,K as u}from"./index-DJoF3m8L.js";const r=new Set(["/","/about"]);function a(){const t=n(e=>!!e.user),{pathname:o}=u();return t?r.has(o)?{loggedIn:!0,to:"/app"}:{loggedIn:!0,to:"/about"}:{loggedIn:!1,to:"/login"}}export{a as u};

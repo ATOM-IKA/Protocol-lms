@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#0b0d12"/>
+  <!-- HUD grid hint -->
+  <g stroke="#12151e" stroke-width="1">
+    <path d="M0 21 H64 M0 43 H64 M21 0 V64 M43 0 V64"/>
+  </g>
+  <!-- lime plate with clipped corner -->
+  <polygon points="14,6 58,6 58,50 50,58 6,58 6,14" fill="#beef8d"/>
+  <!-- geometric P -->
+  <g fill="#0b0d12">
+    <rect x="18" y="16" width="8" height="32"/>
+    <rect x="18" y="16" width="24" height="8"/>
+    <rect x="18" y="28" width="24" height="8"/>
+    <rect x="38" y="16" width="8" height="20"/>
+  </g>
+  <!-- aqua accent bracket -->
+  <path d="M6 14 V6 H14" fill="none" stroke="#9fe8ff" stroke-width="2.5"/>
+</svg>
